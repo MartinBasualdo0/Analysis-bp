@@ -4,11 +4,11 @@ import json
 from typing import Literal
 from src.wrangling import _modify_bdp_code_d_c, _modify_bdp_code_anaf_enep
 
-
-
-def clean_data_frame(df:pd.DataFrame):
+def clean_bp_data_frame(df:pd.DataFrame):
     
     df = df.rename({df.columns[2]: "Descripción", df.columns[0]: "SDMX", df.columns[1]:"Codigo BDP"}, axis=1)
+    df.loc[df['SDMX'] == "Q.N.AR.W1.S121.S1.T.A.FA.P.F5._Z.USD._T.M.N", 'Codigo BDP'] = "3.2.1.1"
+    df.loc[df['SDMX'] == "Q.N.AR.W1.S121.S1.T.L.FA.P.F5._Z.USD._T.M.N", 'Codigo BDP'] = "3.2.1.1"
     df = _modify_bdp_code_anaf_enep(df)
     df['Codigo BDP'] = df.apply(_modify_bdp_code_d_c, axis=1)
     
@@ -46,7 +46,7 @@ def export_dictionary_to_json(dictionary, filename):
 
 def main_write_dict(link_xls:list[str], key_column:Literal["Codigo BDP", "Descripción", "SDMX"], value_column:Literal["Codigo BDP", "Descripción", "SDMX"]):
     df = pd.read_excel(link_xls, sheet_name="Cuadro 14", header=5, skipfooter=6)
-    cleaned_df = clean_data_frame(df)
+    cleaned_df = clean_bp_data_frame(df)
     sdmx_description_dict = _create_sdmx_description_dict(cleaned_df, key_column, value_column)
     export_dictionary_to_json(sdmx_description_dict, f"{key_column}_{value_column}_dict.json")
     

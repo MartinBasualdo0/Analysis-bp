@@ -72,9 +72,11 @@ def _modify_bdp_code_anaf_enep(df:pd.DataFrame):
 
 
 
-def clean_data_frame(xls:str):
+def clean_bp_data_frame(xls:str):
     df = pd.read_excel(xls, sheet_name = "Cuadro 14", header=4, skipfooter=6)
     df= df.rename({df.columns[1]:"Codigo BDP", df.columns[2]: "Descripción", df.columns[0]:"SDMX"}, axis = 1)
+    df.loc[df['SDMX'] == "Q.N.AR.W1.S121.S1.T.A.FA.P.F5._Z.USD._T.M.N", 'Codigo BDP'] = "3.2.1.1"
+    df.loc[df['SDMX'] == "Q.N.AR.W1.S121.S1.T.L.FA.P.F5._Z.USD._T.M.N", 'Codigo BDP'] = "3.2.1.1"
     df = _modify_bdp_code_anaf_enep(df)
     df['Codigo BDP'] = df.apply(_modify_bdp_code_d_c, axis=1)
     df = (
