@@ -2,7 +2,7 @@ import pandas as pd
 import os
 import json
 from typing import Literal
-from src.wrangling import _modify_bdp_code_d_c, _modify_bdp_code_anaf_enep
+from src.bp.wrangling import _modify_bdp_code_d_c, _modify_bdp_code_anaf_enep
 
 def clean_bp_data_frame(df:pd.DataFrame):
     
