@@ -46,10 +46,16 @@ def _modify_bdp_code_asset_liability(df:pd.DataFrame):
 
     df = df.drop(["activo_pasivo","first_a_o_p"], axis=1)
     return df
-def clean_pii_data_frame(df:pd.DataFrame):
+
+def pii_first_clean_step_for_dict(xls:str):
+    df = pd.read_excel(xls, sheet_name = "Cuadro 22", header=4, skipfooter=6)
     df = df.rename({df.columns[1]:"Codigo BDP", df.columns[2]: "Descripción", df.columns[0]:"SDMX"}, axis = 1)
     df = df.drop(df.columns[3:13], axis=1) #Hay años sin trimestres
     df = _modify_bdp_code_asset_liability(df)
+    return df
+
+def clean_pii_data_frame(df:pd.DataFrame):
+    df = pii_first_clean_step_for_dict()
     df = (
         df.filter(regex='^(?!Total).*')
         .iloc[1:]

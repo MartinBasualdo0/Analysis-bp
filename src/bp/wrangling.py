@@ -70,15 +70,32 @@ def _modify_bdp_code_anaf_enep(df:pd.DataFrame):
     return df
 
 
+def _handle_last_category(df: pd.DataFrame):
+    last_category = None
+    for index, row in df.iterrows():
+        if row['Descripción'] == 'Crédito' or row['Descripción'] == 'Débito':
+            if last_category:
+                if row['Descripción'] == 'Débito':
+                    df.at[index, 'Descripción'] = last_category + ' Débito'
+                else:
+                    df.at[index, 'Descripción'] = last_category + ' Crédito'
+        else:
+            last_category = row['Descripción']
+    
+    return df
 
-
-def clean_bp_data_frame(xls:str):
+def bp_first_clean_step_for_dict(xls:str):
     df = pd.read_excel(xls, sheet_name = "Cuadro 14", header=4, skipfooter=6)
     df= df.rename({df.columns[1]:"Codigo BDP", df.columns[2]: "Descripción", df.columns[0]:"SDMX"}, axis = 1)
     df.loc[df['SDMX'] == "Q.N.AR.W1.S121.S1.T.A.FA.P.F5._Z.USD._T.M.N", 'Codigo BDP'] = "3.2.1.1"
     df.loc[df['SDMX'] == "Q.N.AR.W1.S121.S1.T.L.FA.P.F5._Z.USD._T.M.N", 'Codigo BDP'] = "3.2.1.1"
     df = _modify_bdp_code_anaf_enep(df)
     df['Codigo BDP'] = df.apply(_modify_bdp_code_d_c, axis=1)
+    df = _handle_last_category(df)
+    return df
+
+def clean_bp_data_frame(xls:str):
+    df = bp_first_clean_step_for_dict(xls)
     df = (
         df.filter(regex='^(?!Total).*')
         .iloc[1:]
