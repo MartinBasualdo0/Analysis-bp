@@ -54,8 +54,8 @@ def pii_first_clean_step_for_dict(xls:str):
     df = _modify_bdp_code_asset_liability(df)
     return df
 
-def clean_pii_data_frame(df:pd.DataFrame):
-    df = pii_first_clean_step_for_dict()
+def clean_pii_data_frame(xls:str):
+    df = pii_first_clean_step_for_dict(xls)
     df = (
         df.filter(regex='^(?!Total).*')
         .iloc[1:]
